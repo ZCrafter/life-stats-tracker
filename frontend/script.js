@@ -1,7 +1,7 @@
 // Configuration - Now using backend directly
 // If using frontend container: use '/api'
 // If using backend container only: use 'http://your-ip:5000/api'
-const API_BASE = '/api';
+const API_BASE = 'http://192.168.200.119:5000/api';
 
 // State
 let currentEventType = null;
