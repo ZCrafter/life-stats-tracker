@@ -1,5 +1,7 @@
-// Configuration - Updated for Docker
-const API_BASE = '/api';  // Now using relative path through nginx proxy
+// Configuration - Now using backend directly
+// If using frontend container: use '/api'
+// If using backend container only: use 'http://your-ip:5000/api'
+const API_BASE = '/api';
 
 // State
 let currentEventType = null;
@@ -71,17 +73,14 @@ function initEventListeners() {
 }
 
 function switchTab(tabName) {
-    // Update active tab button
     tabBtns.forEach(btn => {
         btn.classList.toggle('active', btn.getAttribute('data-tab') === tabName);
     });
 
-    // Show active tab pane
     tabPanes.forEach(pane => {
         pane.classList.toggle('active', pane.id === `${tabName}-tab`);
     });
 
-    // Load data if needed
     if (tabName === 'stats') {
         loadStats();
     }
@@ -127,7 +126,6 @@ async function submitEvent() {
 
         if (response.ok) {
             alert('Event recorded successfully!');
-            // Clear form
             document.getElementById('location').value = '';
             document.getElementById('who').value = '';
             eventBtns.forEach(btn => btn.classList.remove('active'));
@@ -174,11 +172,9 @@ async function loadStats() {
         const response = await fetch(`${API_BASE}/stats?include_cum=${includeCumStats}`);
         const stats = await response.json();
 
-        // Update basic stats
         document.getElementById('total-events').textContent = stats.total_events;
         document.getElementById('toothbrush-count').textContent = stats.toothbrush_count;
 
-        // Update charts
         updateEventsChart(stats.events_by_type);
         updatePeopleChart(stats.events_by_person);
     } catch (error) {
@@ -189,7 +185,6 @@ async function loadStats() {
 function updateEventsChart(eventsByType) {
     const ctx = document.getElementById('events-chart').getContext('2d');
     
-    // Destroy existing chart if it exists
     if (window.eventsChart) {
         window.eventsChart.destroy();
     }
@@ -232,7 +227,6 @@ function updateEventsChart(eventsByType) {
 function updatePeopleChart(eventsByPerson) {
     const ctx = document.getElementById('people-chart').getContext('2d');
     
-    // Destroy existing chart if it exists
     if (window.peopleChart) {
         window.peopleChart.destroy();
     }
