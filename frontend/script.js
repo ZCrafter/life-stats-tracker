@@ -252,3 +252,183 @@ function updatePeopleChart(eventsByPerson) {
         }
     });
 }
+
+// Data Viewing Functions
+function initDataViewListeners() {
+    // Data tab buttons
+    document.querySelectorAll('.data-tab-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const dataType = this.getAttribute('data-data-type');
+            switchDataTab(dataType);
+        });
+    });
+
+    // Refresh data button
+    document.getElementById('refresh-data').addEventListener('click', function() {
+        loadDataView();
+    });
+
+    // Export CSV button
+    document.getElementById('export-csv').addEventListener('click', exportToCSV);
+}
+
+function switchDataTab(dataType) {
+    // Update active data tab button
+    document.querySelectorAll('.data-tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-data-type') === dataType);
+    });
+
+    // Show active data table
+    document.getElementById('events-data').classList.toggle('hidden', dataType !== 'events');
+    document.getElementById('toothbrush-data').classList.toggle('hidden', dataType !== 'toothbrush');
+
+    // Load data if needed
+    if (dataType === 'events') {
+        loadEventsData();
+    } else if (dataType === 'toothbrush') {
+        loadToothbrushData();
+    }
+}
+
+async function loadDataView() {
+    const activeDataType = document.querySelector('.data-tab-btn.active').getAttribute('data-data-type');
+    if (activeDataType === 'events') {
+        await loadEventsData();
+    } else if (activeDataType === 'toothbrush') {
+        await loadToothbrushData();
+    }
+}
+
+async function loadEventsData() {
+    try {
+        const response = await fetch(`${API_BASE}/events?include_cum=true`);
+        const events = await response.json();
+        
+        const tbody = document.getElementById('events-table-body');
+        tbody.innerHTML = '';
+
+        events.forEach(event => {
+            const row = document.createElement('tr');
+            const date = new Date(event.timestamp).toLocaleString();
+            
+            row.innerHTML = `
+                <td>${event.id}</td>
+                <td><span class="event-badge ${event.type}">${event.type}</span></td>
+                <td>${date}</td>
+                <td>${event.location || '-'}</td>
+                <td>${event.who || '-'}</td>
+                <td>${event.normalized_who || '-'}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    } catch (error) {
+        console.error('Error loading events data:', error);
+    }
+}
+
+async function loadToothbrushData() {
+    try {
+        const response = await fetch(`${API_BASE}/toothbrush`);
+        const data = await response.json();
+        
+        const tbody = document.getElementById('toothbrush-table-body');
+        tbody.innerHTML = '';
+
+        data.forEach(entry => {
+            const row = document.createElement('tr');
+            const date = new Date(entry.timestamp).toLocaleString();
+            
+            row.innerHTML = `
+                <td>${entry.id}</td>
+                <td>${date}</td>
+                <td>${entry.duration || '-'}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    } catch (error) {
+        console.error('Error loading toothbrush data:', error);
+    }
+}
+
+function exportToCSV() {
+    const activeDataType = document.querySelector('.data-tab-btn.active').getAttribute('data-data-type');
+    
+    if (activeDataType === 'events') {
+        exportEventsToCSV();
+    } else if (activeDataType === 'toothbrush') {
+        exportToothbrushToCSV();
+    }
+}
+
+async function exportEventsToCSV() {
+    try {
+        const response = await fetch(`${API_BASE}/events?include_cum=true`);
+        const events = await response.json();
+        
+        const headers = ['ID', 'Type', 'Timestamp', 'Location', 'Who', 'Normalized Who'];
+        const csvData = events.map(event => [
+            event.id,
+            event.type,
+            event.timestamp,
+            event.location || '',
+            event.who || '',
+            event.normalized_who || ''
+        ]);
+        
+        downloadCSV([headers, ...csvData], 'events_data.csv');
+    } catch (error) {
+        console.error('Error exporting events:', error);
+    }
+}
+
+async function exportToothbrushToCSV() {
+    try {
+        const response = await fetch(`${API_BASE}/toothbrush`);
+        const data = await response.json();
+        
+        const headers = ['ID', 'Timestamp', 'Duration'];
+        const csvData = data.map(entry => [
+            entry.id,
+            entry.timestamp,
+            entry.duration || ''
+        ]);
+        
+        downloadCSV([headers, ...csvData], 'toothbrush_data.csv');
+    } catch (error) {
+        console.error('Error exporting toothbrush data:', error);
+    }
+}
+
+function downloadCSV(data, filename) {
+    const csvContent = data.map(row => 
+        row.map(field => `"${String(field).replace(/"/g, '""')}"`).join(',')
+    ).join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
+
+// Update the initEventListeners function to include data view listeners
+function initEventListeners() {
+    // ... existing code ...
+    
+    // Add this line:
+    initDataViewListeners();
+}
+
+// Update the switchTab function to handle data view tab
+function switchTab(tabName) {
+    // ... existing code ...
+
+    // Load data if needed
+    if (tabName === 'stats') {
+        loadStats();
+    } else if (tabName === 'data-view') {
+        loadDataView();
+    }
+}
