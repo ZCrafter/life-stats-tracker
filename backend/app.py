@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from database import Database
 import json
@@ -11,6 +11,16 @@ CORS(app)
 # Initialize database
 db = Database()
 
+# Serve frontend static files
+@app.route('/')
+def serve_frontend():
+    return send_from_directory('../frontend', 'index.html')
+
+@app.route('/<path:path>')
+def serve_static(path):
+    return send_from_directory('../frontend', path)
+
+# API Routes (same as before)
 @app.route('/api/event', methods=['POST'])
 def add_event():
     data = request.json
@@ -36,7 +46,6 @@ def get_events():
     include_cum = request.args.get('include_cum', 'false').lower() == 'true'
     events = db.get_events(include_cum)
     
-    # Convert to list of dicts
     result = []
     for event in events:
         result.append({
@@ -66,11 +75,9 @@ def get_toothbrush():
 
 @app.route('/api/stats', methods=['GET'])
 def get_stats():
-    # Get basic stats
     events = db.get_events(include_cum=True)
     toothbrush_data = db.get_toothbrush_data()
     
-    # Calculate stats
     stats = {
         'total_events': len(events),
         'events_by_type': {},
@@ -88,31 +95,6 @@ def get_stats():
             stats['events_by_person'][normalized_who] = stats['events_by_person'].get(normalized_who, 0) + 1
     
     return jsonify(stats)
-
-@app.route('/api/import', methods=['POST'])
-def import_data():
-    """Endpoint to import Google Forms data"""
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file provided'}), 400
-    
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({'error': 'No file selected'}), 400
-    
-    if file and file.filename.endswith('.csv'):
-        # Save uploaded file temporarily
-        file_path = f"/tmp/{file.filename}"
-        file.save(file_path)
-        
-        # Import data
-        db.import_google_forms_data(file_path)
-        
-        # Clean up
-        os.remove(file_path)
-        
-        return jsonify({'status': 'success', 'message': 'Data imported successfully'})
-    
-    return jsonify({'error': 'Invalid file format. Please upload a CSV file.'}), 400
 
 @app.route('/api/health', methods=['GET'])
 def health_check():
