@@ -10,7 +10,6 @@
 </head>
 <body>
     <div class="container">
-        <!-- Header with always-visible submit button -->
         <header>
             <h1>Life Stats</h1>
             <button id="submitBtn" class="submit-btn">
@@ -18,16 +17,15 @@
             </button>
         </header>
 
-        <!-- Navigation -->
         <nav class="nav-tabs">
             <button class="tab-btn active" data-tab="events">Events</button>
             <button class="tab-btn" data-tab="toothbrush">Toothbrush</button>
+            <button class="tab-btn" data-tab="data-view">View Data</button>
             <button class="tab-btn" data-tab="stats">Stats</button>
         </nav>
 
-        <!-- Tab Content -->
         <div class="tab-content">
-            <!-- Events Tab -->
+            <!-- Events Tab (unchanged) -->
             <div id="events-tab" class="tab-pane active">
                 <div class="event-buttons">
                     <button class="event-btn pee" data-type="pee">
@@ -54,7 +52,7 @@
                 <button id="events-submit" class="action-btn">Record Event</button>
             </div>
 
-            <!-- Toothbrush Tab -->
+            <!-- Toothbrush Tab (unchanged) -->
             <div id="toothbrush-tab" class="tab-pane">
                 <div class="time-display">
                     <span id="toothbrush-time">--:--</span>
@@ -72,7 +70,59 @@
                 <button id="toothbrush-submit" class="action-btn">Record Brushing</button>
             </div>
 
-            <!-- Stats Tab -->
+            <!-- NEW: Data View Tab -->
+            <div id="data-view-tab" class="tab-pane">
+                <div class="data-actions">
+                    <button id="refresh-data" class="action-btn">
+                        <i class="fas fa-sync-alt"></i> Refresh Data
+                    </button>
+                    <button id="export-csv" class="action-btn secondary">
+                        <i class="fas fa-download"></i> Export CSV
+                    </button>
+                </div>
+
+                <div class="data-tabs">
+                    <button class="data-tab-btn active" data-data-type="events">Events</button>
+                    <button class="data-tab-btn" data-data-type="toothbrush">Toothbrush</button>
+                </div>
+
+                <div class="data-container">
+                    <div id="events-data" class="data-table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Type</th>
+                                    <th>Date & Time</th>
+                                    <th>Location</th>
+                                    <th>Who</th>
+                                    <th>Normalized Who</th>
+                                </tr>
+                            </thead>
+                            <tbody id="events-table-body">
+                                <!-- Data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="toothbrush-data" class="data-table-container hidden">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Date & Time</th>
+                                    <th>Duration (min)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="toothbrush-table-body">
+                                <!-- Data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Tab (unchanged) -->
             <div id="stats-tab" class="tab-pane">
                 <div class="stats-header">
                     <h2>Your Stats</h2>
