@@ -1,7 +1,8 @@
 // Configuration - Now using backend directly
 // If using frontend container: use '/api'
 // If using backend container only: use 'http://your-ip:5000/api'
-const API_BASE = 'http://192.168.200.119:5000/api';
+// Use relative path - nginx will proxy to backend
+const API_BASE = '/api';
 
 // State
 let currentEventType = null;
@@ -17,12 +18,31 @@ const durationBtns = document.querySelectorAll('.duration-btn');
 const toggleCumStatsBtn = document.getElementById('toggle-cum-stats');
 
 // Initialize
-document.addEventListener('DOMContentLoaded', function() {
+// Test on startup
+document.addEventListener('DOMContentLoaded', async function() {
+    const connected = await testConnection();
+    if (!connected) {
+        alert('Cannot connect to backend. Please check the browser console for details.');
+    }
     initEventListeners();
     updateToothbrushTime();
     setInterval(updateToothbrushTime, 1000);
     loadStats();
 });
+
+// Debug function
+async function testConnection() {
+    try {
+        console.log('Testing connection to:', API_BASE);
+        const response = await fetch(API_BASE + '/health');
+        const data = await response.json();
+        console.log('✅ Connection successful:', data);
+        return true;
+    } catch (error) {
+        console.error('❌ Connection failed:', error);
+        return false;
+    }
+}
 
 function initEventListeners() {
     // Tab navigation
