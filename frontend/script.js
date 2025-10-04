@@ -20,14 +20,22 @@ const toggleCumStatsBtn = document.getElementById('toggle-cum-stats');
 // Initialize
 // Test on startup
 document.addEventListener('DOMContentLoaded', async function() {
+    console.log('Frontend loaded, testing backend connection...');
     const connected = await testConnection();
+    
     if (!connected) {
         alert('Cannot connect to backend. Please check the browser console for details.');
     }
+    
+    // Rest of your initialization
     initEventListeners();
     updateToothbrushTime();
     setInterval(updateToothbrushTime, 1000);
-    loadStats();
+    
+    // Load stats if we're on the stats tab
+    if (document.querySelector('.tab-btn.active').getAttribute('data-tab') === 'stats') {
+        loadStats();
+    }
 });
 
 // Debug function
