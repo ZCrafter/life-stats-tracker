@@ -354,3 +354,26 @@ canvas {
 .data-table {
     min-width: 600px;
 }
+
+.event-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.event-badge.pee {
+    background: var(--primary);
+    color: white;
+}
+
+.event-badge.poo {
+    background: var(--warning);
+    color: white;
+}
+
+.event-badge.cum {
+    background: var(--danger);
+    color: white;
+}
