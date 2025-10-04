@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.9-alpine
 
 WORKDIR /app
 
@@ -7,7 +7,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# Create necessary directories
 RUN mkdir -p /app/data /app/db
 
 EXPOSE 5000
