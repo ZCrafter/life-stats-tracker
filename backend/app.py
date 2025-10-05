@@ -4,9 +4,13 @@ from flask_cors import CORS
 import os
 from datetime import datetime
 import psycopg2
+from models import init_db
 
 app = Flask(__name__)
 CORS(app)
+
+# Initialize database on startup
+init_db()
 
 def get_db_connection():
     return psycopg2.connect(os.environ['DATABASE_URL'])
@@ -34,7 +38,12 @@ def get_events():
         cur.execute('SELECT * FROM events WHERE screen = %s ORDER BY timestamp DESC', (screen,))
     else:
         cur.execute('SELECT * FROM events ORDER BY timestamp DESC')
-    events = cur.fetchall()
+    
+    columns = [desc[0] for desc in cur.description]
+    events = []
+    for row in cur.fetchall():
+        events.append(dict(zip(columns, row)))
+    
     cur.close()
     conn.close()
     return jsonify(events)
@@ -50,4 +59,4 @@ def delete_event(event_id):
     return jsonify({'status': 'deleted'})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000)  # Explicitly set port 5000
