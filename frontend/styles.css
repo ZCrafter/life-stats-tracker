@@ -1,0 +1,114 @@
+/* frontend/styles.css */
+:root {
+    --primary: #6366f1;
+    --secondary: #10b981;
+    --danger: #ef4444;
+    --dark: #1f2937;
+    --light: #f9fafb;
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--light);
+}
+
+.app {
+    max-width: 400px;
+    margin: 0 auto;
+    background: white;
+    min-height: 100vh;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+.nav {
+    display: flex;
+    background: var(--dark);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-btn {
+    flex: 1;
+    padding: 1rem;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.nav-btn.active {
+    background: var(--primary);
+}
+
+.screen {
+    display: none;
+    padding: 1rem;
+    padding-bottom: 80px;
+}
+
+.screen.active {
+    display: block;
+}
+
+.event-buttons {
+    display: grid;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.event-btn {
+    padding: 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.event-btn.pee { background: #fef3c7; }
+.event-btn.poo { background: #d1d5db; }
+.event-btn.cum { background: #dbeafe; }
+.event-btn.teeth-btn { background: var(--secondary); color: white; }
+
+.event-btn.selected {
+    transform: scale(0.95);
+    box-shadow: inset 0 0 0 3px var(--primary);
+}
+
+.cum-container {
+    position: relative;
+}
+
+.secret-btn {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.cum.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.submit-btn {
+    position: fixed;
+    bottom: 1rem;
+    left: 1rem;
+    right: 1rem;
+    padding: 1rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+/* Add remaining CSS for inputs, charts, admin table */
