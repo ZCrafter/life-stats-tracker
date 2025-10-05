@@ -95,15 +95,16 @@ class LifeStatsApp {
     }
 
     async apiCall(endpoint, method = 'GET', data = null) {
-        const options = {
-            method,
-            headers: { 'Content-Type': 'application/json' }
-        };
-        if (data) options.body = JSON.stringify(data);
-        
-        const response = await fetch(`http://localhost:5000${endpoint}`, options);
-        return await response.json();
-    }
+    const options = {
+        method,
+        headers: { 'Content-Type': 'application/json' }
+    };
+    if (data) options.body = JSON.stringify(data);
+    
+    // Use port 5000 for backend API
+    const response = await fetch(`http://YOUR_SERVER_IP:5000/api${endpoint}`, options);
+    return await response.json();
+}
 
     resetForm() {
         this.selectedEvent = null;
