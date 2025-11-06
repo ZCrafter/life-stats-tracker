@@ -5,6 +5,7 @@ let currentVR = 0;
 let currentFlosser = 0;
 let cumVisible = false;
 let statsSpicyVisible = false;
+let selectedQuickName = null;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -113,6 +114,42 @@ function toggleTheme() {
     themeBtn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
 }
 
+async function loadTopNames() {
+    try {
+        const response = await fetch('/api/top-names');
+        const topNames = await response.json();
+        
+        const grid = document.getElementById('quickNamesGrid');
+        grid.innerHTML = '';
+        
+        topNames.forEach(item => {
+            const btn = document.createElement('button');
+            btn.className = 'quick-name-btn';
+            btn.textContent = item.person;
+            btn.dataset.name = item.person;
+            btn.addEventListener('click', () => selectQuickName(item.person));
+            grid.appendChild(btn);
+        });
+    } catch (error) {
+        console.error('Error loading top names:', error);
+    }
+}
+
+function selectQuickName(name) {
+    selectedQuickName = name;
+    
+    // Update button states
+    document.querySelectorAll('.quick-name-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.name === name) {
+            btn.classList.add('active');
+        }
+    });
+    
+    // Auto-fill person1 field
+    document.getElementById('person1').value = name;
+}
+
 function selectEvent(event) {
     currentEvent = event;
     
@@ -124,25 +161,36 @@ function selectEvent(event) {
         }
     });
 
+    // Update card background color
+    const card = document.querySelector('#bathroom-screen .card');
+    card.classList.remove('pee-selected', 'poo-selected', 'cum-selected');
+    if (event) {
+        card.classList.add(`${event}-selected`);
+    }
+
     // Show cum button if cum is selected
     if (event === 'cum') {
         document.getElementById('cumBtn').classList.add('active');
         cumVisible = true;
+        loadTopNames();
     }
 
     // Show/hide appropriate fields
     const locationGroup = document.getElementById('locationGroup');
     const vrGroup = document.getElementById('vrGroup');
     const whoGroup = document.getElementById('whoGroup');
+    const quickNamesGroup = document.getElementById('quickNamesGroup');
 
     if (event === 'pee' || event === 'poo') {
         locationGroup.classList.remove('hidden');
         vrGroup.classList.add('hidden');
         whoGroup.classList.add('hidden');
+        quickNamesGroup.classList.add('hidden');
     } else if (event === 'cum') {
         locationGroup.classList.add('hidden');
         vrGroup.classList.remove('hidden');
         whoGroup.classList.remove('hidden');
+        quickNamesGroup.classList.remove('hidden');
     }
 }
 
@@ -150,6 +198,10 @@ function hideCumButton() {
     if (!document.querySelector('.event-btn.active[data-event="cum"]')) {
         document.getElementById('cumBtn').classList.remove('active');
         cumVisible = false;
+        
+        // Reset card background
+        const card = document.querySelector('#bathroom-screen .card');
+        card.classList.remove('pee-selected', 'poo-selected', 'cum-selected');
     }
 }
 
@@ -254,10 +306,12 @@ function resetBathroomForm() {
     currentEvent = null;
     currentLocation = null;
     currentVR = 0;
+    selectedQuickName = null;
     
     document.querySelectorAll('.event-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('[data-location]').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('[data-vr]').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.quick-name-btn').forEach(btn => btn.classList.remove('active'));
     
     document.getElementById('person1').value = '';
     document.getElementById('person2').value = '';
@@ -265,6 +319,10 @@ function resetBathroomForm() {
     document.getElementById('locationGroup').classList.remove('hidden');
     document.getElementById('vrGroup').classList.add('hidden');
     document.getElementById('whoGroup').classList.add('hidden');
+    document.getElementById('quickNamesGroup').classList.add('hidden');
+    
+    const card = document.querySelector('#bathroom-screen .card');
+    card.classList.remove('pee-selected', 'poo-selected', 'cum-selected');
     
     hideCumButton();
     initDateTime();
@@ -297,12 +355,49 @@ async function loadStats() {
         
         renderTimelineChart(data.bathroom_stats);
         renderLocationChart(data.location_stats);
+        renderLeaderboard(data.person_stats);
         renderSpicyChart(data.person_stats);
         renderDentalChart(data.dental_stats);
         renderRecentEvents(data.recent_bathroom, data.recent_dental);
     } catch (error) {
         console.error('Error loading stats:', error);
     }
+}
+
+function renderLeaderboard(data) {
+    const container = document.getElementById('leaderboard');
+    container.innerHTML = '';
+    
+    if (data.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No data yet</p>';
+        return;
+    }
+    
+    data.forEach((item, index) => {
+        const leaderboardItem = document.createElement('div');
+        leaderboardItem.className = 'leaderboard-item';
+        
+        let rankClass = '';
+        let rankEmoji = '';
+        if (index === 0) {
+            rankClass = 'gold';
+            rankEmoji = '🥇';
+        } else if (index === 1) {
+            rankClass = 'silver';
+            rankEmoji = '🥈';
+        } else if (index === 2) {
+            rankClass = 'bronze';
+            rankEmoji = '🥉';
+        }
+        
+        leaderboardItem.innerHTML = `
+            <span class="leaderboard-rank ${rankClass}">${rankEmoji || (index + 1)}</span>
+            <span class="leaderboard-name">${item.person}</span>
+            <span class="leaderboard-count">${item.count}</span>
+        `;
+        
+        container.appendChild(leaderboardItem);
+    });
 }
 
 function renderTimelineChart(data) {
