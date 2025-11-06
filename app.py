@@ -11,25 +11,6 @@ CORS(app)
 DB_PATH = 'data/life_stats.db'
 MAPPINGS_PATH = 'name_mappings.json'
 
-# Auto-initialize database if it doesn't exist or is empty
-def ensure_database():
-    db_exists = os.path.exists(DB_PATH)
-    if not db_exists:
-        os.makedirs('data', exist_ok=True)
-    
-    # Check if tables exist
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='bathroom_events'")
-    table_exists = c.fetchone() is not None
-    conn.close()
-    
-    if not table_exists:
-        from init_db import init_database
-        init_database()
-
-ensure_database()
-
 def get_db():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
@@ -172,7 +153,8 @@ def get_stats():
                  FROM bathroom_events
                  WHERE event_type = 'cum' AND person1 IS NOT NULL
                  GROUP BY person1
-                 ORDER BY count DESC''')
+                 ORDER BY count DESC
+                 LIMIT 10''')
     person_stats = [dict(row) for row in c.fetchall()]
     
     # Get dental stats
@@ -207,6 +189,22 @@ def get_stats():
         'recent_bathroom': recent_bathroom,
         'recent_dental': recent_dental
     })
+
+@app.route('/api/top-names')
+def get_top_names():
+    conn = get_db()
+    c = conn.cursor()
+    
+    c.execute('''SELECT person1 as person, COUNT(*) as count
+                 FROM bathroom_events
+                 WHERE event_type = 'cum' AND person1 IS NOT NULL
+                 GROUP BY person1
+                 ORDER BY count DESC
+                 LIMIT 3''')
+    top_names = [dict(row) for row in c.fetchall()]
+    
+    conn.close()
+    return jsonify(top_names)
 
 @app.route('/api/mappings', methods=['GET'])
 def get_mappings():
