@@ -1,0 +1,12 @@
+services:
+  life-stats:
+    build: .
+    container_name: life-stats-tracker
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/app/data
+      - ./name_mappings.json:/app/name_mappings.json
+    environment:
+      - FLASK_ENV=production
+    restart: unless-stopped
