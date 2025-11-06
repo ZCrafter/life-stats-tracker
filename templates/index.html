@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life Stats Tracker</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
+</head>
+<body class="dark-mode">
+    <div class="container">
+        <!-- Navigation Tabs -->
+        <div class="tabs">
+            <button class="tab active" data-screen="bathroom">Events</button>
+            <button class="tab" data-screen="dental">Dental</button>
+            <button class="tab" data-screen="stats">Stats</button>
+            <button class="theme-toggle" id="themeToggle">☀️</button>
+        </div>
+
+        <!-- Screen 1: Bathroom Events -->
+        <div class="screen active" id="bathroom-screen">
+            <div class="card">
+                <div class="event-buttons">
+                    <button class="event-btn" data-event="pee" style="background-color: #FFD93D;">Pee</button>
+                    <button class="event-btn" data-event="poo" style="background-color: #8B4513; color: white;">Poo</button>
+                    <button class="event-btn hidden-btn" id="cumBtn" data-event="cum">Cum</button>
+                </div>
+
+                <div class="form-group">
+                    <label>Date & Time</label>
+                    <input type="datetime-local" id="bathroomDateTime" class="input">
+                </div>
+
+                <div class="form-group" id="locationGroup">
+                    <label>Location</label>
+                    <div class="button-group">
+                        <button class="toggle-btn" data-location="Home">Home</button>
+                        <button class="toggle-btn" data-location="Work">Work</button>
+                        <button class="toggle-btn" data-location="Other">Other</button>
+                    </div>
+                </div>
+
+                <div class="form-group hidden" id="vrGroup">
+                    <label>In VR?</label>
+                    <div class="button-group">
+                        <button class="toggle-btn" data-vr="0">No</button>
+                        <button class="toggle-btn" data-vr="1">Yes</button>
+                    </div>
+                </div>
+
+                <div class="form-group hidden" id="whoGroup">
+                    <label>Person 1</label>
+                    <input type="text" id="person1" class="input" placeholder="Enter name">
+                    <label style="margin-top: 10px;">Person 2</label>
+                    <input type="text" id="person2" class="input" placeholder="Enter name">
+                </div>
+
+                <button class="submit-btn" id="bathroomSubmit">Submit Event</button>
+            </div>
+        </div>
+
+        <!-- Screen 2: Dental -->
+        <div class="screen" id="dental-screen">
+            <div class="card">
+                <h2>Toothbrush Tracking</h2>
+
+                <div class="form-group">
+                    <label>Date & Time</label>
+                    <input type="datetime-local" id="dentalDateTime" class="input">
+                </div>
+
+                <div class="form-group">
+                    <label>Used Water Flosser?</label>
+                    <div class="button-group">
+                        <button class="toggle-btn" data-flosser="0">No</button>
+                        <button class="toggle-btn" data-flosser="1">Yes</button>
+                    </div>
+                </div>
+
+                <button class="submit-btn" id="dentalSubmit">Submit Event</button>
+            </div>
+        </div>
+
+        <!-- Screen 3: Stats -->
+        <div class="screen" id="stats-screen">
+            <button class="stats-toggle-btn" id="statsToggle">🌶️</button>
+            
+            <div class="card">
+                <h2>Statistics Dashboard</h2>
+                
+                <div class="stats-section">
+                    <h3>Events Timeline</h3>
+                    <div id="timelineChart"></div>
+                </div>
+
+                <div class="stats-section">
+                    <h3>Location Breakdown</h3>
+                    <div id="locationChart"></div>
+                </div>
+
+                <div class="stats-section hidden" id="spicyStats">
+                    <h3>🌶️ Spicy Stats</h3>
+                    <div id="spicyChart"></div>
+                </div>
+
+                <div class="stats-section">
+                    <h3>Dental Tracking</h3>
+                    <div id="dentalChart"></div>
+                </div>
+
+                <div class="stats-section">
+                    <h3>Recent Events</h3>
+                    <div id="recentEvents"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
