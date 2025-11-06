@@ -11,6 +11,13 @@ CORS(app)
 DB_PATH = 'data/life_stats.db'
 MAPPINGS_PATH = 'name_mappings.json'
 
+def ensure_database():
+    if not os.path.exists(DB_PATH):
+        from init_db import init_database
+        init_database()
+
+ensure_database()
+
 def get_db():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
