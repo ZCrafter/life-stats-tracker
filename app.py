@@ -11,8 +11,20 @@ CORS(app)
 DB_PATH = 'data/life_stats.db'
 MAPPINGS_PATH = 'name_mappings.json'
 
+# Auto-initialize database if it doesn't exist or is empty
 def ensure_database():
-    if not os.path.exists(DB_PATH):
+    db_exists = os.path.exists(DB_PATH)
+    if not db_exists:
+        os.makedirs('data', exist_ok=True)
+    
+    # Check if tables exist
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='bathroom_events'")
+    table_exists = c.fetchone() is not None
+    conn.close()
+    
+    if not table_exists:
         from init_db import init_database
         init_database()
 
