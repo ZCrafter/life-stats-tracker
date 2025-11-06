@@ -22,8 +22,8 @@
             <div class="card">
                 <div class="event-buttons">
                     <button class="event-btn" data-event="pee" style="background-color: #FFD93D;">Pee</button>
-                    <button class="event-btn" data-event="poo" style="background-color: #8B4513; color: white;">Poo</button>
                     <button class="event-btn hidden-btn" id="cumBtn" data-event="cum">Cum</button>
+                    <button class="event-btn" data-event="poo" style="background-color: #8B4513; color: white;">Poo</button>
                 </div>
 
                 <div class="form-group">
@@ -48,8 +48,15 @@
                     </div>
                 </div>
 
+                <div class="form-group hidden" id="quickNamesGroup">
+                    <label>Quick Select</label>
+                    <div class="quick-names-grid" id="quickNamesGrid">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
                 <div class="form-group hidden" id="whoGroup">
-                    <label>Person 1</label>
+                    <label>Person 1 (Manual Entry)</label>
                     <input type="text" id="person1" class="input" placeholder="Enter name">
                     <label style="margin-top: 10px;">Person 2</label>
                     <input type="text" id="person2" class="input" placeholder="Enter name">
@@ -99,7 +106,8 @@
                 </div>
 
                 <div class="stats-section hidden" id="spicyStats">
-                    <h3>🌶️ Spicy Stats</h3>
+                    <h3>🌶️ Leaderboard</h3>
+                    <div id="leaderboard"></div>
                     <div id="spicyChart"></div>
                 </div>
 
