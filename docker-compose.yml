@@ -3,7 +3,7 @@ services:
     build: .
     container_name: life-stats-tracker
     ports:
-      - "5001:5001"
+      - "5002:5002"
     volumes:
       - ./data:/app/data
       - ./name_mappings.json:/app/name_mappings.json
