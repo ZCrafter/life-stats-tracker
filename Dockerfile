@@ -9,6 +9,6 @@ COPY . .
 
 RUN python init_db.py
 
-EXPOSE 5000
+EXPOSE 5001
 
 CMD ["python", "app.py"]
