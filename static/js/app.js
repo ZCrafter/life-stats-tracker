@@ -6,6 +6,8 @@ let currentFlosser = 0;
 let cumVisible = false;
 let statsSpicyVisible = false;
 let selectedQuickName = null;
+let editingEventId = null;
+let editingDentalId = null;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -77,6 +79,10 @@ function initEventListeners() {
     // Submit buttons
     document.getElementById('bathroomSubmit').addEventListener('click', submitBathroomEvent);
     document.getElementById('dentalSubmit').addEventListener('click', submitDentalEvent);
+    
+    // Cancel buttons
+    document.getElementById('bathroomCancel').addEventListener('click', cancelBathroomEdit);
+    document.getElementById('dentalCancel').addEventListener('click', cancelDentalEdit);
 
     // Stats toggle
     document.getElementById('statsToggle').addEventListener('click', toggleSpicyStats);
@@ -151,6 +157,17 @@ function selectQuickName(name) {
 }
 
 function selectEvent(event) {
+    const cumBtn = document.getElementById('cumBtn');
+    
+    // If clicking the hidden cum button, reveal it
+    if (event === 'cum' && cumBtn.classList.contains('hidden-btn')) {
+        cumBtn.classList.remove('hidden-btn');
+        cumBtn.classList.add('revealed');
+        cumVisible = true;
+        // Don't select it yet, just reveal it
+        return;
+    }
+    
     currentEvent = event;
     
     // Update button states
@@ -168,11 +185,16 @@ function selectEvent(event) {
         card.classList.add(`${event}-selected`);
     }
 
-    // Show cum button if cum is selected
+    // Load top names if cum is selected
     if (event === 'cum') {
-        document.getElementById('cumBtn').classList.add('active');
-        cumVisible = true;
         loadTopNames();
+    }
+    
+    // If selecting pee or poo, hide the cum button again
+    if (event === 'pee' || event === 'poo') {
+        cumBtn.classList.add('hidden-btn');
+        cumBtn.classList.remove('revealed', 'active');
+        cumVisible = false;
     }
 
     // Show/hide appropriate fields
@@ -195,14 +217,14 @@ function selectEvent(event) {
 }
 
 function hideCumButton() {
-    if (!document.querySelector('.event-btn.active[data-event="cum"]')) {
-        document.getElementById('cumBtn').classList.remove('active');
-        cumVisible = false;
-        
-        // Reset card background
-        const card = document.querySelector('#bathroom-screen .card');
-        card.classList.remove('pee-selected', 'poo-selected', 'cum-selected');
-    }
+    const cumBtn = document.getElementById('cumBtn');
+    cumBtn.classList.add('hidden-btn');
+    cumBtn.classList.remove('active', 'revealed');
+    cumVisible = false;
+    
+    // Reset card background
+    const card = document.querySelector('#bathroom-screen .card');
+    card.classList.remove('pee-selected', 'poo-selected', 'cum-selected');
 }
 
 function selectLocation(location) {
@@ -257,14 +279,25 @@ async function submitBathroomEvent() {
     };
 
     try {
-        const response = await fetch('/api/bathroom', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
+        let response;
+        if (editingEventId) {
+            // Update existing event
+            response = await fetch(`/api/bathroom/${editingEventId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+        } else {
+            // Create new event
+            response = await fetch('/api/bathroom', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+        }
 
         if (response.ok) {
-            alert('Event submitted successfully!');
+            alert(editingEventId ? 'Event updated successfully!' : 'Event submitted successfully!');
             resetBathroomForm();
         }
     } catch (error) {
@@ -286,14 +319,25 @@ async function submitDentalEvent() {
     };
 
     try {
-        const response = await fetch('/api/dental', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
+        let response;
+        if (editingDentalId) {
+            // Update existing event
+            response = await fetch(`/api/dental/${editingDentalId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+        } else {
+            // Create new event
+            response = await fetch('/api/dental', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+        }
 
         if (response.ok) {
-            alert('Event submitted successfully!');
+            alert(editingDentalId ? 'Event updated successfully!' : 'Event submitted successfully!');
             resetDentalForm();
         }
     } catch (error) {
@@ -302,7 +346,16 @@ async function submitDentalEvent() {
     }
 }
 
+function cancelBathroomEdit() {
+    resetBathroomForm();
+}
+
+function cancelDentalEdit() {
+    resetDentalForm();
+}
+
 function resetBathroomForm() {
+    editingEventId = null;
     currentEvent = null;
     currentLocation = null;
     currentVR = 0;
@@ -321,6 +374,9 @@ function resetBathroomForm() {
     document.getElementById('whoGroup').classList.add('hidden');
     document.getElementById('quickNamesGroup').classList.add('hidden');
     
+    document.getElementById('bathroomCancel').classList.add('hidden');
+    document.getElementById('bathroomSubmit').textContent = 'Submit Event';
+    
     const card = document.querySelector('#bathroom-screen .card');
     card.classList.remove('pee-selected', 'poo-selected', 'cum-selected');
     
@@ -329,8 +385,11 @@ function resetBathroomForm() {
 }
 
 function resetDentalForm() {
+    editingDentalId = null;
     currentFlosser = 0;
     document.querySelectorAll('[data-flosser]').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('dentalCancel').classList.add('hidden');
+    document.getElementById('dentalSubmit').textContent = 'Submit Event';
     initDateTime();
 }
 
@@ -498,8 +557,13 @@ function renderRecentEvents(bathroom, dental) {
     bathroom.slice(0, 10).forEach(event => {
         const item = document.createElement('div');
         item.className = 'event-item';
+        
+        let details = `${event.event_type}`;
+        if (event.location) details += ` (${event.location})`;
+        if (event.person1) details += ` - ${event.person1}`;
+        
         item.innerHTML = `
-            <span>${event.event_type} - ${new Date(event.timestamp).toLocaleString()}</span>
+            <span>${details} - ${new Date(event.timestamp).toLocaleString()}</span>
             <div class="event-actions">
                 <button class="edit-btn" onclick="editBathroomEvent(${event.id})">Edit</button>
                 <button class="delete-btn" onclick="deleteBathroomEvent(${event.id})">Delete</button>
@@ -514,13 +578,100 @@ function renderRecentEvents(bathroom, dental) {
         const item = document.createElement('div');
         item.className = 'event-item';
         item.innerHTML = `
-            <span>Brushed - ${new Date(event.timestamp).toLocaleString()}</span>
+            <span>Brushed${event.used_flosser ? ' + Flossed' : ''} - ${new Date(event.timestamp).toLocaleString()}</span>
             <div class="event-actions">
+                <button class="edit-btn" onclick="editDentalEvent(${event.id})">Edit</button>
                 <button class="delete-btn" onclick="deleteDentalEvent(${event.id})">Delete</button>
             </div>
         `;
         container.appendChild(item);
     });
+}
+
+async function editBathroomEvent(id) {
+    try {
+        // Fetch the event data
+        const response = await fetch('/api/stats');
+        const data = await response.json();
+        const event = data.recent_bathroom.find(e => e.id === id);
+        
+        if (!event) {
+            alert('Event not found');
+            return;
+        }
+        
+        // Switch to bathroom screen
+        document.querySelector('[data-screen="bathroom"]').click();
+        
+        // Set editing mode
+        editingEventId = id;
+        
+        // If it's a cum event, reveal the button first
+        const cumBtn = document.getElementById('cumBtn');
+        if (event.event_type === 'cum') {
+            cumBtn.classList.remove('hidden-btn');
+            cumBtn.classList.add('revealed');
+            cumVisible = true;
+        }
+        
+        // Populate form
+        document.getElementById('bathroomDateTime').value = event.timestamp;
+        selectEvent(event.event_type);
+        
+        if (event.location) {
+            selectLocation(event.location);
+        }
+        
+        if (event.event_type === 'cum') {
+            selectVR(event.in_vr || 0);
+            document.getElementById('person1').value = event.person1 || '';
+            document.getElementById('person2').value = event.person2 || '';
+        }
+        
+        // Update UI
+        document.getElementById('bathroomSubmit').textContent = 'Update Event';
+        document.getElementById('bathroomCancel').classList.remove('hidden');
+        
+        // Scroll to top
+        window.scrollTo(0, 0);
+    } catch (error) {
+        alert('Error loading event for editing');
+        console.error(error);
+    }
+}
+
+async function editDentalEvent(id) {
+    try {
+        // Fetch the event data
+        const response = await fetch('/api/stats');
+        const data = await response.json();
+        const event = data.recent_dental.find(e => e.id === id);
+        
+        if (!event) {
+            alert('Event not found');
+            return;
+        }
+        
+        // Switch to dental screen
+        document.querySelector('[data-screen="dental"]').click();
+        
+        // Set editing mode
+        editingDentalId = id;
+        
+        // Populate form
+        document.getElementById('dentalDateTime').value = event.timestamp;
+        selectFlosser(event.used_flosser || 0);
+        
+        // Update UI
+        document.getElementById('dentalSubmit').textContent = 'Update Event';
+        document.getElementById('dentalCancel').classList.remove('hidden');
+        
+        // Scroll to top
+        window.scrollTo(0, 0);
+    } catch (error) {
+        alert('Error loading event for editing');
+        console.error(error);
+    }
 }
 
 async function deleteBathroomEvent(id) {
@@ -543,8 +694,4 @@ async function deleteDentalEvent(id) {
     } catch (error) {
         alert('Error deleting event');
     }
-}
-
-function editBathroomEvent(id) {
-    alert('Edit functionality: Switch to Events tab and manually re-enter. Full edit UI coming soon!');
 }
