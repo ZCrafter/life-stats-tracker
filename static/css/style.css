@@ -104,15 +104,27 @@ body {
 }
 
 .card.pee-selected {
-    background: linear-gradient(135deg, rgba(255, 217, 61, 0.1) 0%, var(--bg-secondary) 100%);
+    background: linear-gradient(135deg, rgba(255, 217, 61, 0.4) 0%, var(--bg-secondary) 100%);
 }
 
 .card.poo-selected {
-    background: linear-gradient(135deg, rgba(139, 69, 19, 0.1) 0%, var(--bg-secondary) 100%);
+    background: linear-gradient(135deg, rgba(139, 69, 19, 0.4) 0%, var(--bg-secondary) 100%);
 }
 
 .card.cum-selected {
-    background: linear-gradient(135deg, rgba(231, 76, 60, 0.1) 0%, var(--bg-secondary) 100%);
+    background: linear-gradient(135deg, rgba(80, 80, 80, 0.5) 0%, var(--bg-secondary) 100%);
+}
+
+body.dark-mode .card.pee-selected {
+    background: linear-gradient(135deg, rgba(255, 217, 61, 0.3) 0%, var(--bg-secondary) 100%);
+}
+
+body.dark-mode .card.poo-selected {
+    background: linear-gradient(135deg, rgba(139, 69, 19, 0.3) 0%, var(--bg-secondary) 100%);
+}
+
+body.dark-mode .card.cum-selected {
+    background: linear-gradient(135deg, rgba(100, 100, 100, 0.4) 0%, var(--bg-secondary) 100%);
 }
 
 .card h2 {
@@ -138,6 +150,76 @@ body {
     box-shadow: var(--shadow);
 }
 
+.pee-btn {
+    background-color: rgba(255, 217, 61, 0.4);
+    color: #333;
+}
+
+.pee-btn.active {
+    background-color: #FFD93D;
+    color: #333;
+}
+
+.poo-btn {
+    background-color: rgba(139, 69, 19, 0.4);
+    color: #ddd;
+}
+
+.poo-btn.active {
+    background-color: #8B4513;
+    color: white;
+}
+
+.cum-btn {
+    background-color: rgba(80, 80, 80, 0.5);
+    color: #bbb;
+}
+
+.cum-btn.active {
+    background-color: #505050;
+    color: white;
+}
+
+.cum-btn.revealed {
+    background-color: rgba(80, 80, 80, 0.5);
+    color: #bbb;
+}
+
+body.dark-mode .pee-btn {
+    background-color: rgba(255, 217, 61, 0.3);
+    color: #ddd;
+}
+
+body.dark-mode .pee-btn.active {
+    background-color: #FFD93D;
+    color: #333;
+}
+
+body.dark-mode .poo-btn {
+    background-color: rgba(139, 69, 19, 0.3);
+    color: #aaa;
+}
+
+body.dark-mode .poo-btn.active {
+    background-color: #8B4513;
+    color: white;
+}
+
+body.dark-mode .cum-btn {
+    background-color: rgba(100, 100, 100, 0.3);
+    color: #888;
+}
+
+body.dark-mode .cum-btn.active {
+    background-color: #606060;
+    color: white;
+}
+
+body.dark-mode .cum-btn.revealed {
+    background-color: rgba(100, 100, 100, 0.3);
+    color: #888;
+}
+
 .event-btn:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-hover);
@@ -149,28 +231,16 @@ body {
 }
 
 .hidden-btn {
-    background-color: var(--bg-secondary) !important;
     color: var(--bg-secondary) !important;
+    background-color: var(--bg-secondary) !important;
     border: 2px solid var(--bg-secondary) !important;
     box-shadow: none !important;
-    cursor: pointer;
 }
 
 body.dark-mode .hidden-btn {
-    background-color: var(--bg-secondary) !important;
     color: var(--bg-secondary) !important;
+    background-color: var(--bg-secondary) !important;
     border: 2px solid var(--bg-secondary) !important;
-}
-
-.hidden-btn.active {
-    background-color: #e74c3c !important;
-    color: white !important;
-    border: 2px solid #e74c3c !important;
-    box-shadow: var(--shadow) !important;
-}
-
-.hidden-btn.active:hover {
-    box-shadow: var(--shadow-hover) !important;
 }
 
 .form-group {
@@ -197,6 +267,10 @@ body.dark-mode .hidden-btn {
     background-color: var(--bg-primary);
     color: var(--text-primary);
     transition: all 0.3s;
+}
+
+.datetime-input {
+    max-width: 280px;
 }
 
 .input:focus {
@@ -252,13 +326,13 @@ body.dark-mode .hidden-btn {
 }
 
 .quick-name-btn:hover {
-    border-color: #e74c3c;
+    border-color: #606060;
 }
 
 .quick-name-btn.active {
-    background-color: #e74c3c;
+    background-color: #606060;
     color: white;
-    border-color: #e74c3c;
+    border-color: #606060;
 }
 
 .submit-btn {
@@ -283,6 +357,30 @@ body.dark-mode .hidden-btn {
 
 .submit-btn:active {
     transform: translateY(0);
+}
+
+.cancel-btn {
+    width: 100%;
+    padding: 16px;
+    background-color: #95a5a6;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: var(--shadow);
+    margin-top: 10px;
+}
+
+.cancel-btn.hidden {
+    display: none;
+}
+
+.cancel-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
 }
 
 .stats-section {
@@ -405,7 +503,7 @@ body.dark-mode .hidden-btn {
 .leaderboard-count {
     font-size: 20px;
     font-weight: 600;
-    color: #e74c3c;
+    color: #606060;
 }
 
 @media (max-width: 600px) {
@@ -424,5 +522,9 @@ body.dark-mode .hidden-btn {
     .event-btn {
         padding: 12px;
         font-size: 16px;
+    }
+    
+    .datetime-input {
+        max-width: 100%;
     }
 }
