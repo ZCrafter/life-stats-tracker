@@ -159,13 +159,10 @@ function selectQuickName(name) {
 function selectEvent(event) {
     const cumBtn = document.getElementById('cumBtn');
     
-    // If clicking the hidden cum button, reveal it
+    // If clicking the hidden cum button, reveal it AND select it immediately
     if (event === 'cum' && cumBtn.classList.contains('hidden-btn')) {
         cumBtn.classList.remove('hidden-btn');
-        cumBtn.classList.add('revealed');
         cumVisible = true;
-        // Don't select it yet, just reveal it
-        return;
     }
     
     currentEvent = event;
@@ -193,7 +190,7 @@ function selectEvent(event) {
     // If selecting pee or poo, hide the cum button again
     if (event === 'pee' || event === 'poo') {
         cumBtn.classList.add('hidden-btn');
-        cumBtn.classList.remove('revealed', 'active');
+        cumBtn.classList.remove('active');
         cumVisible = false;
     }
 
@@ -219,7 +216,7 @@ function selectEvent(event) {
 function hideCumButton() {
     const cumBtn = document.getElementById('cumBtn');
     cumBtn.classList.add('hidden-btn');
-    cumBtn.classList.remove('active', 'revealed');
+    cumBtn.classList.remove('active');
     cumVisible = false;
     
     // Reset card background
@@ -610,7 +607,6 @@ async function editBathroomEvent(id) {
         const cumBtn = document.getElementById('cumBtn');
         if (event.event_type === 'cum') {
             cumBtn.classList.remove('hidden-btn');
-            cumBtn.classList.add('revealed');
             cumVisible = true;
         }
         
