@@ -21,14 +21,14 @@
         <div class="screen active" id="bathroom-screen">
             <div class="card">
                 <div class="event-buttons">
-                    <button class="event-btn" data-event="pee" style="background-color: #FFD93D;">Pee</button>
-                    <button class="event-btn hidden-btn" id="cumBtn" data-event="cum">Cum</button>
-                    <button class="event-btn" data-event="poo" style="background-color: #8B4513; color: white;">Poo</button>
+                    <button class="event-btn pee-btn" data-event="pee">Pee</button>
+                    <button class="event-btn hidden-btn cum-btn" id="cumBtn" data-event="cum">Cum</button>
+                    <button class="event-btn poo-btn" data-event="poo">Poo</button>
                 </div>
 
                 <div class="form-group">
                     <label>Date & Time</label>
-                    <input type="datetime-local" id="bathroomDateTime" class="input">
+                    <input type="datetime-local" id="bathroomDateTime" class="input datetime-input">
                 </div>
 
                 <div class="form-group" id="locationGroup">
@@ -63,6 +63,7 @@
                 </div>
 
                 <button class="submit-btn" id="bathroomSubmit">Submit Event</button>
+                <button class="cancel-btn hidden" id="bathroomCancel">Cancel Edit</button>
             </div>
         </div>
 
@@ -73,7 +74,7 @@
 
                 <div class="form-group">
                     <label>Date & Time</label>
-                    <input type="datetime-local" id="dentalDateTime" class="input">
+                    <input type="datetime-local" id="dentalDateTime" class="input datetime-input">
                 </div>
 
                 <div class="form-group">
@@ -85,6 +86,7 @@
                 </div>
 
                 <button class="submit-btn" id="dentalSubmit">Submit Event</button>
+                <button class="cancel-btn hidden" id="dentalCancel">Cancel Edit</button>
             </div>
         </div>
 
